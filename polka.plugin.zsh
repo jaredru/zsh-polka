@@ -3,8 +3,9 @@
 # Polka
 #
 
-# define our expansion function
 polka-try-expand() {
+    # if the cursor is at the end of the buffer,
+    # and the buffer matches the form "..%d"
     if [[ $CURSOR = $#BUFFER && $BUFFER =~ "^\.\.([0-9]*)$" ]]; then
         BUFFER="cd ../"
 
@@ -12,6 +13,7 @@ polka-try-expand() {
             BUFFER+="../";
         done
 
+        # move the cursor to the end of the line
         zle end-of-line
         return 0
     fi
@@ -19,14 +21,13 @@ polka-try-expand() {
     return 1
 }
 
-# for a space, insert the character if we fail the expansion
 polka-handle-space() {
+    # if the expansion failed, just insert the space
     if ! polka-try-expand; then
         zle self-insert
     fi
 }
 
-# for enter, accept the line regardless of the expansion result
 polka-handle-enter() {
     polka-try-expand
     zle accept-line
